@@ -1,10 +1,11 @@
-detail=40;
-nSteps = 120;            //number of vertical steps in the rotor generator
+detail=40;              //leave at 40 - initial mount printed at 40 detail
+nSteps = 10;            //number of vertical steps in the rotor generator
+nStans = 5;             //number of stations along the blade
 nBlades = 7;            //number of blades in the rotor
 rotorHeight = 55;       //height of the rotor (clipped by intersection with profile)
 twistMult = 0.5;        //increase twist on rotor (tweaks the value from twister())
 bladeThick = 1.1;       //thickness of rotor blades
-bladeSpan = 50;         //blade span (axis to edge, clipped by profile)
+bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //rotate([90,180,0])motor(0,0);
 
@@ -25,13 +26,13 @@ bladeSpan = 50;         //blade span (axis to edge, clipped by profile)
 
 //SHROUD********************************************
 //for assembly uncomment next line:
-translate([0,0,-193])shroud();
+//translate([0,0,-193])shroud();
 //for final render uncomment next line:
 //translate([0,0,250])rotate([180,0,0])shroud();
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])rotor();
+translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
 
@@ -167,48 +168,54 @@ module rotor() {
         }
         rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
     }
-    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");    
+    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+    //assemble points for use in generation of the blade
+    //0:nStans is station range along the blade
+    //0:nSteps is steps up the blade
+    bladePoints = concat([for(k=[0:nSteps])concat([for(i=[0:nStans])[i/nStans*bladeSpan,bladeThick/2,rotorHeight*k/nSteps]],[for(j=[nStans:-1:0])[j/nStans*bladeSpan,-bladeThick/2,rotorHeight*k/nSteps]])]);
+    echo(bladePoints);
+    bladeFaces = [];
 }
 
 module rotorBlade() {
-//    for (j=[0:(nSteps-2)]) {
-//        hull() {
-//            rotate(twister(j/nSteps))translate([0,0,(j/nSteps)*rotorHeight])rotate([90,0,0]){
+    for (j=[0:(nSteps-2)]) {
+        hull() {
+            rotate(twister(j/nSteps))translate([0,0,(j/nSteps)*rotorHeight])rotate([90,0,0]){
 //                cylinder(d=bladeThick,h=bladeSpan,$fn=8);
-////                    translate([0,0,-bladeThick/2])cube([bladeSpan,bladeThick,bladeThick]);
-//            }
-//            rotate(twister((j+1)/nSteps))translate([0,0,((j+1)/nSteps)*rotorHeight])rotate([90,0,0]){
+                translate([0,0,-bladeThick/2])cube([bladeSpan,bladeThick,bladeThick],$fn=detail);
+            }
+            rotate(twister((j+1)/nSteps))translate([0,0,((j+1)/nSteps)*rotorHeight])rotate([90,0,0]){
 //                cylinder(d=bladeThick,h=bladeSpan,$fn=8);
-////                    translate([0,0,-bladeThick/2])cube([bladeSpan,bladeThick,bladeThick]);
-//            }
-//        }
-//    }
-    twistInputList = [ for (i = [0 : (1/nSteps) : 1]) i ];
-    twistOutputList = [for (a = [ 0 : len(twistInputList) - 1 ]) twisty(twistInputList[a]) ];
-    
-//    linear_extrude(height=50,slices=20)rotate(twistListOutput)square([50,1.5]);
-//    echo(twistInputList);
-//    echo(twistOutputList);
-    //0  1  2  3  4  5
-    //6  7  8  9  10 11
-    //0   1   2
-    //5   4   3
-    //---------
-    //6   7   8
-    //11  10  9
-    pointList = [[0,0,0],[0,25,0],[0,50,0],[2,50,0],[2,25,0],[2,0,0],
-                [0,0,2],[0,25,2],[0,50,2],[2,50,2],[2,25,2],[2,0,2]];
-    faceList = [[0,1,2,3,4,5],[11,10,9,8,7,6],[5,4,3,9,10,11],[0,1,2,8,7,6],[2,3,9,8],[0,5,11,6]];
-    pointList = []; 
-    polyhedron(
-        points=pointList,
-        faces=faceList);
+                translate([0,0,-bladeThick/2])cube([bladeSpan,bladeThick,bladeThick],$fn=detail);
+            }
+        }
+    }
+//    twistInputList = [ for (i = [0 : (1/nSteps) : 1]) i ];
+//    twistOutputList = [for (a = [ 0 : len(twistInputList) - 1 ]) twisty(twistInputList[a]) ];
+//    
+////    linear_extrude(height=50,slices=20)rotate(twistListOutput)square([50,1.5]);
+////    echo(twistInputList);
+////    echo(twistOutputList);
+//    //0  1  2  3  4  5
+//    //6  7  8  9  10 11
+//    //0   1   2
+//    //5   4   3
+//    //---------
+//    //6   7   8
+//    //11  10  9
+//    pointList = [[0,0,0],[0,25,0],[0,50,0],[2,50,0],[2,25,0],[2,0,0],
+//                [0,0,2],[0,25,2],[0,50,2],[2,50,2],[2,25,2],[2,0,2]];
+//    faceList = [[0,1,2,3,4,5],[11,10,9,8,7,6],[5,4,3,9,10,11],[0,1,2,8,7,6],[2,3,9,8],[0,5,11,6]];
+//    pointList = []; 
+//    polyhedron(
+//        points=pointList,
+//        faces=faceList);
     
 }
 
 //function defines the twist on the blades of the rotor
-function twister(frac) = [0,0,twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac)];
-function twisty(frac) = twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
+function twister(frac) = [0,0,-twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac)];
+function twisty(frac) = -twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
 
 module boltHole(headLength, headDiam, shaftLength, shaftDiam) {
  	//(M3)
