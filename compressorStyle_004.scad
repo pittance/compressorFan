@@ -1,5 +1,5 @@
 detail=40;              //leave at 40 - initial mount printed at 40 detail
-nSteps = 10;            //number of vertical steps in the rotor generator
+nSteps = 10;            //number of vertical steps in the rotor generator
 nStans = 5;             //number of stations along the blade
 nBlades = 7;            //number of blades in the rotor
 rotorHeight = 55;       //height of the rotor (clipped by intersection with profile)
@@ -32,9 +32,22 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-translate([0,0,-193])rotor();
+//translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
+
+
+echo(flatten([for(k=[0:nSteps])pointRow(k)]));
+
+btmFace = [for(i=[0:(2*nStans)+1]) i];
+echo(btmFace);
+topFace = [for(i=[nSteps*((2*nStans)+2):(nSteps*(2*nStans+2))+(2*nStans+1)]) i];
+echo(topFace);
+allFace = concat([btmFace],[topFace]);
+echo(allFace);
+//polyhedron(points=flatten([for(k=[0:nSteps])pointRow(k)]),faces=bladeFaces);
+polyhedron(points=flatten([for(k=[0:nSteps])pointRow(k)]),faces=allFace);
+
 
 //rotorBlade();
 
@@ -156,26 +169,36 @@ module motor(pad, depth) {
 }
 
 module rotor() {
-    intersection() {
-        union() {
-            for (i=[0:(nBlades-1)]) {
-                translate([0,0,210]) {
-                    rotate([0,0,i*360/(nBlades)]) {
-                        rotorBlade();
-                    }
-                }
-            }
-        }
-        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
-    }
-    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
-    //assemble points for use in generation of the blade
-    //0:nStans is station range along the blade
+//    intersection() {
+//        union() {
+//            for (i=[0:(nBlades-1)]) {
+//                translate([0,0,210]) {
+//                    rotate([0,0,i*360/(nBlades)]) {
+//                        rotorBlade();
+//                    }
+//                }
+//            }
+//        }
+//        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
+//    }
+//    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+    //assemble points for use in generation of the blade
+    //0:nStans is station range along the blade
     //0:nSteps is steps up the blade
-    bladePoints = concat([for(k=[0:nSteps])concat([for(i=[0:nStans])[i/nStans*bladeSpan,bladeThick/2,rotorHeight*k/nSteps]],[for(j=[nStans:-1:0])[j/nStans*bladeSpan,-bladeThick/2,rotorHeight*k/nSteps]])]);
-    echo(bladePoints);
-    bladeFaces = [];
-}
+//    points = [for(k=[0:nSteps])pointRow(k)];
+//    bladePoints = concat(
+//            [for(k=[0:nSteps])for(j=[0:nStans])[j/nStans*bladeSpan,bladeThick/2,rotorHeight*k/nSteps]],
+//                [for(n=[nStans:-1:0])[n/nStans*bladeSpan,-bladeThick/2,rotorHeight*n/nSteps]]);
+//    bladePoints = flatten(points);
+//    echo(bladePoints);
+    bladeFaces = [[0,5,6],[0,6,11]];
+    echo(flatten([for(k=[0:nSteps])pointRow(k)]));
+    polyhedron(points=flatten([for(k=[0:nSteps])pointRow(k)]),faces=bladeFaces);
+}
+function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
+function pointRow(row) = concat(out(row),back(row));
+function out(ht)= [for(i=[0:nStans])[i/nStans*bladeSpan,bladeThick/2,rotorHeight*ht/nSteps]];
+function back(ht)= [for(j=[nStans:-1:0])[j/nStans*bladeSpan,-bladeThick/2,rotorHeight*ht/nSteps]];
 
 module rotorBlade() {
     for (j=[0:(nSteps-2)]) {
