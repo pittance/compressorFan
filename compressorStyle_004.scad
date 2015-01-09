@@ -1,6 +1,6 @@
 detail=40;              //leave at 40 - initial mount printed at 40 detail
-nSteps = 5;            //number of vertical steps in the rotor generator
-nStans = 10;             //number of stations along the blade
+nSteps = 10;            //number of vertical steps in the rotor generator - 10
+nStans = 5;             //number of stations along the blade - 5
 nBlades = 7;            //number of blades in the rotor
 rotorHeight = 55;       //height of the rotor (clipped by intersection with profile)
 twistMult = 0.5;        //increase twist on rotor (tweaks the value from twister())
@@ -32,7 +32,7 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])rotor();
+translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
 
@@ -173,7 +173,7 @@ module rotor() {
 //        }
 //        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
 //    }
-//    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
     //assemble points for use in generation of the blade
     //0:nStans is station range along the blade
     //0:nSteps is steps up the blade
@@ -187,20 +187,20 @@ module rotor() {
 //    echo(flatten([for(k=[0:nSteps])pointRow(k)]));
 //    polyhedron(points=flatten([for(k=[0:nSteps])pointRow(k)]),faces=bladeFaces);
 }
-
-//following functions used in rotorBlade
+
+//following functions used in rotorBlade
 //function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
 //function pointRow(row,twist) = concat(out(row),back(row,twist));
 //function out(ht)= [for(i=[0:nStans])[(i/nStans*bladeSpan),(bladeThick/2),rotorHeight*ht/nSteps]];
 //function back(ht)= [for(j=[nStans:-1:0])[j/nStans*bladeSpan,-bladeThick/2,rotorHeight*ht/nSteps]];
-
-function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
-function pointRow(row,twist) = concat(out(row,twist),back(row,twist));
-function out(ht,tw)= [for(i=[0:nStans])[(x(i/nStans)*cos(tw)+yp()*sin(tw)),(-x(i/nStans)*sin(tw)+yp()*cos(tw)),rotorHeight*ht/nSteps]];
-function back(ht,tw)= [for(j=[nStans:-1:0])[(x(j/nStans)*cos(tw)+yn()*sin(tw)),(-x(j/nStans)*sin(tw)+yn()*cos(tw)),rotorHeight*ht/nSteps]];
-function x(p) = (p*bladeSpan);
-function yp() = (bladeThick/2);
-function yn() = -(bladeThick/2);
+
+function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
+function pointRow(row,twist) = concat(out(row,twist),back(row,twist));
+function out(ht,tw)= [for(i=[0:nStans-1])[(x(i/nStans)*cos(tw)+yp()*sin(tw)),(-x(i/nStans)*sin(tw)+yp()*cos(tw)),rotorHeight*ht/nSteps]];
+function back(ht,tw)= [for(j=[nStans-1:-1:0])[(x(j/nStans)*cos(tw)+yn()*sin(tw)),(-x(j/nStans)*sin(tw)+yn()*cos(tw)),rotorHeight*ht/nSteps]];
+function x(p) = (p*bladeSpan);
+function yp() = (bladeThick/2);
+function yn() = -(bladeThick/2);
 
 module rotorBlade() {
 //    for (j=[0:(nSteps-2)]) {
@@ -234,24 +234,43 @@ module rotorBlade() {
 //    pointList = []; 
 //    polyhedron(
 //        points=pointList,
-//        faces=faceList);
+//        faces=faceList);
+    
+//    btmFace = [for(i=[0:(2*nStans)+1]) i];
+//        
+//    topFace = [for(i=[nSteps*((2*nStans)+2):(nSteps*(2*nStans+2))+(2*nStans+1)]) i];
+//        
+//    endFaceOne = concat([for(i=[0:(2*nStans+2):(2*nStans+2)*nSteps])i],[for(i=[(2*nStans+1)+(2*nStans+2)*nSteps:-(2*nStans+2):(2*nStans+1)]) i]);
+//        
+//    endFaceTwo = concat([for(i=[nStans:(2*nStans+2):nStans+(2*nStans+2)*nSteps])i],[for(i=[nStans+1+(2*nStans+2)*nSteps:-(2*nStans+2):nStans+1])i]);
+//        
+//    sideFaceOne = [for(j=[0:nSteps-1])concat([for(i=[(j*(2*nStans+2)):nStans+(j*(2*nStans+2))])i],[for(i=[nStans+((j+1)*(2*nStans+2)):-1:((j+1)*(2*nStans+2))])i])];  
+//        
+//    sideFaceTwo = [for(j=[0:nSteps-1])concat([for(i=[(j*(2*nStans+2))+nStans+1:2*nStans+1+(j*(2*nStans+2))])i],[for(i=[2*nStans+((j+1)*(2*nStans+2))+1:-1:((j+1)*(2*nStans+2))+nStans+1])i])]; 
+//        
+////    allFace = concat([btmFace],[topFace],[endFaceOne],[endFaceTwo],sideFaceOne,sideFaceTwo);
+//    allFace = concat([btmFace],[topFace],sideFaceOne,sideFaceTwo);
+//
+
+    //Start all over again
+    //echo points
+    pts = flatten([for(k=[0:nSteps-1])pointRow(k,twisty(k/nSteps))]);
+//    echo(pts); //pts look OK (10*10) for (10 nstep * 5 nstan)
+
+    roundFace = [for(j=[0:nSteps-2])for(i=[0:(nStans*2)-2])[i+(nStans*2)*j,(i+1)+(nStans*2)*j,(i+11)+(nStans*2)*j,(i+10)+(nStans*2)*j]];
+    endFace = [for(j=[0:nSteps-2])[9+(nStans*2)*j,0+(nStans*2)*j,10+(nStans*2)*j,19+(nStans*2)*j]];
+        echo(endFace);
+    btmFace = [for(i=[0:(nStans)-2])[(nStans+1)+i,nStans+i,nStans-1-i,nStans-2-i]];
+        echo(btmFace);
+    topFace = [for(i=[0:(nStans)-2])[(2*nStans*nSteps)-(2*nStans)+i,(2*nStans*nSteps)-(2*nStans)+1+i,(2*nStans*nSteps)-2-i,(2*nStans*nSteps)-1-i]];;
+        echo(topFace);
+    polyhedron(points=pts,faces=concat(roundFace,endFace,btmFace,topFace));
     
-    btmFace = [for(i=[0:(2*nStans)+1]) i];
-        
-    topFace = [for(i=[nSteps*((2*nStans)+2):(nSteps*(2*nStans+2))+(2*nStans+1)]) i];
-        
-    endFaceOne = concat([for(i=[0:(2*nStans+2):(2*nStans+2)*nSteps])i],[for(i=[(2*nStans+1)+(2*nStans+2)*nSteps:-(2*nStans+2):(2*nStans+1)]) i]);
-        
-    endFaceTwo = concat([for(i=[nStans:(2*nStans+2):nStans+(2*nStans+2)*nSteps])i],[for(i=[nStans+1+(2*nStans+2)*nSteps:-(2*nStans+2):nStans+1])i]);
-        
-    sideFaceOne = [for(j=[0:nSteps-1])concat([for(i=[(j*(2*nStans+2)):nStans+(j*(2*nStans+2))])i],[for(i=[nStans+((j+1)*(2*nStans+2)):-1:((j+1)*(2*nStans+2))])i])];  
-        
-    sideFaceTwo = [for(j=[0:nSteps-1])concat([for(i=[(j*(2*nStans+2))+nStans+1:2*nStans+1+(j*(2*nStans+2))])i],[for(i=[2*nStans+((j+1)*(2*nStans+2))+1:-1:((j+1)*(2*nStans+2))+nStans+1])i])]; 
-        
-//    allFace = concat([btmFace],[topFace],[endFaceOne],[endFaceTwo],sideFaceOne,sideFaceTwo);
-    allFace = concat([btmFace],[topFace],sideFaceOne,sideFaceTwo);
-
-    polyhedron(points=flatten([for(k=[0:nSteps])pointRow(k,twisty(k/nSteps))]),faces=allFace);
+    //now start all over again again - needs planar if >3 points - triangles needed?
+
+
+
+
     
 }
 
