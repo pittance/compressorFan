@@ -2,9 +2,9 @@ detail=40;              //leave at 40 - initial mount printed at 40 detail
 nSteps = 25;            //number of vertical steps in the rotor generator - 10
 nStans = 15;             //number of stations along the blade - 5
 nBlades = 6;            //number of blades in the rotor
-rotorHeight = 55;       //height of the rotor (clipped by intersection with profile)
+rotorHeight = 55;       //height of the rotor (clipped by intersection with profile)
 rotorCropHeight = 22;   //height of the lower part of the rotor
-twistMult = 0.35;        //increase twist on rotor (tweaks the value from twister())
+twistMult = 0.35;        //increase twist on rotor (tweaks the value from twister())
 twistTweak = rotorCropHeight/rotorHeight;       //to fix twist on cropped lower rotor blades
 bladeThick = 1.4;       //thickness of rotor blades
 bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
@@ -171,26 +171,24 @@ module rotor() {
                         rotorBlade(rotorHeight,1.0);
                     }
                 }
-            }
-            for (i=[0:(nBlades-1)]) {
-                translate([0,0,210]) {
-                    rotate([0,0,(360/(nBlades))/2+i*360/(nBlades)]) {
-                        rotorBlade(rotorCropHeight,twistTweak);
-                    }
-                }
+            }
+            for (i=[0:(nBlades-1)]) {
+                translate([0,0,210]) {
+                    rotate([0,0,(360/(nBlades))/2+i*360/(nBlades)]) {
+                        rotorBlade(rotorCropHeight,twistTweak);
+                    }
+                }
             }
         }
         rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
     }
-    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+    
+    //add difference to remove shaft and mounting/lock bolts for shaft (two or three...)
+    //balance? might need additional bolts for balance...
 }
 
 //following functions used in rotorBlade
-//function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
-//function pointRow(row,twist) = concat(out(row),back(row,twist));
-//function out(ht)= [for(i=[0:nStans])[(i/nStans*bladeSpan),(bladeThick/2),rotorHeight*ht/nSteps]];
-//function back(ht)= [for(j=[nStans:-1:0])[j/nStans*bladeSpan,-bladeThick/2,rotorHeight*ht/nSteps]];
-
 function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
 function pointRow(row,twist,maxHt) = concat(out(row,twist,maxHt),back(row,twist,maxHt));
 function out(ht,tw,maxHt)= [for(i=[0:nStans-1])[(x(i/nStans)*cos(tw)+yp()*sin(tw)),(-x(i/nStans)*sin(tw)+yp()*cos(tw)),maxHt*ht/nSteps]];
@@ -200,32 +198,32 @@ function yp() = (bladeThick/2);
 function yn() = -(bladeThick/2);
 
 module rotorBlade(maxHt,twFix) {
-    pts = flatten([for(k=[0:nSteps-1])pointRow(k,twisty(twFix*k/nSteps),maxHt)]);
-
-    roundFace = concat(
-        [for(j=[0:nSteps-2])for(i=[0:(nStans*2)-2])[i+(nStans*2)*j,(i+1)+(nStans*2)*j,(i+(2*nStans+1))+(nStans*2)*j]],
-        [for(j=[0:nSteps-2])for(i=[0:(nStans*2)-2])[i+(nStans*2)*j,(i+(2*nStans+1))+(nStans*2)*j,(i+(2*nStans))+(nStans*2)*j]]
-        );
-//    echo(roundFace);    //done as tris
-    
-    endFace = concat(
-        [for(j=[0:nSteps-2])[(2*nStans-1)+(nStans*2)*j,0+(nStans*2)*j,(2*nStans)+(nStans*2)*j]],
-        [for(j=[0:nSteps-2])[(2*nStans-1)+(nStans*2)*j,(2*nStans)+(nStans*2)*j,(4*nStans-1)+(nStans*2)*j]]
-        );
-//    echo(endFace);      //done as tris
-        
-    btmFace = concat(
-        [for(i=[0:(nStans)-2])[(nStans+1)+i,nStans+i,nStans-1-i]],
-        [for(i=[0:(nStans)-2])[(nStans+1)+i,nStans-1-i,nStans-2-i]]
-        );
-//        echo(btmFace);      //done as tris
-        
-    topFace = concat(
-        [for(i=[0:(nStans)-2])[(2*nStans*nSteps)-(2*nStans)+i,(2*nStans*nSteps)-(2*nStans)+1+i,(2*nStans*nSteps)-2-i]],
-        [for(i=[0:(nStans)-2])[(2*nStans*nSteps)-(2*nStans)+i,(2*nStans*nSteps)-2-i,(2*nStans*nSteps)-1-i]]
-         );
-//        echo(topFace);      //done as tris
-        
+    pts = flatten([for(k=[0:nSteps-1])pointRow(k,twisty(twFix*k/nSteps),maxHt)]);
+
+    roundFace = concat(
+        [for(j=[0:nSteps-2])for(i=[0:(nStans*2)-2])[i+(nStans*2)*j,(i+1)+(nStans*2)*j,(i+(2*nStans+1))+(nStans*2)*j]],
+        [for(j=[0:nSteps-2])for(i=[0:(nStans*2)-2])[i+(nStans*2)*j,(i+(2*nStans+1))+(nStans*2)*j,(i+(2*nStans))+(nStans*2)*j]]
+        );
+//    echo(roundFace);
+    
+    endFace = concat(
+        [for(j=[0:nSteps-2])[(2*nStans-1)+(nStans*2)*j,0+(nStans*2)*j,(2*nStans)+(nStans*2)*j]],
+        [for(j=[0:nSteps-2])[(2*nStans-1)+(nStans*2)*j,(2*nStans)+(nStans*2)*j,(4*nStans-1)+(nStans*2)*j]]
+        );
+//    echo(endFace);
+        
+    btmFace = concat(
+        [for(i=[0:(nStans)-2])[(nStans+1)+i,nStans+i,nStans-1-i]],
+        [for(i=[0:(nStans)-2])[(nStans+1)+i,nStans-1-i,nStans-2-i]]
+        );
+//        echo(btmFace); 
+        
+    topFace = concat(
+        [for(i=[0:(nStans)-2])[(2*nStans*nSteps)-(2*nStans)+i,(2*nStans*nSteps)-(2*nStans)+1+i,(2*nStans*nSteps)-2-i]],
+        [for(i=[0:(nStans)-2])[(2*nStans*nSteps)-(2*nStans)+i,(2*nStans*nSteps)-2-i,(2*nStans*nSteps)-1-i]]
+         );
+//        echo(topFace);
+        
     polyhedron(points=pts,faces=concat(roundFace,endFace,btmFace,topFace));
 
 }
