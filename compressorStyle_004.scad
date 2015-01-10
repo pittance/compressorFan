@@ -16,34 +16,27 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //MOTOR HOUSING*************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])baseMotorHousing();
+translate([0,0,-193])baseMotorHousing();
 //for final render uncomment next line:
 //translate([0,0,200])rotate([180,0,0])baseMotorHousing();
 
 //BASE FAIRING**************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])baseFairing();
+translate([0,0,-193])baseFairing();
 //for final render uncomment next line:
 //translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])shroud();
+translate([0,0,-193])shroud();
 //for final render uncomment next line:
 //translate([0,0,250])rotate([180,0,0])shroud();
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])rotor();
+translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
-
-
-
-
-
-
-//rotorBlade();
 
 
 
@@ -93,11 +86,11 @@ module baseFairing() {
         //remove the bottom half
         translate([0,0,-12+170])cylinder(h=170,d=170);
         //scoop out the inside
-        #translate([0,0,90])cylinder(d2=100,d1=0,h=80,$fn=detail);
+        translate([0,0,90])cylinder(d2=100,d1=0,h=80,$fn=detail);
         //mounting holes for the fairing
         for(i=[0:2]){
             //three mounting holes
-            #translate([0,0,155])rotate([0,0,55+i*360/3])translate([68,0,0])boltHole(15,6.5,25,2.5);
+            translate([0,0,155])rotate([0,0,55+i*360/3])translate([68,0,0])boltHole(15,6.5,25,2.5);
         }
     }
 }
@@ -111,11 +104,11 @@ module shroud() {
             }
         }
         //cable routing
-        #rotate([0,0,-4])translate([59.2,0,200])cylinder(h=80,d=6,$fn=detail);
+        rotate([0,0,-4])translate([59.2,0,200])cylinder(h=80,d=6,$fn=detail);
         //mounting holes for the motor housing to be bolted to the shroud
         for(i=[0:2]){
             //three mounting holes
-            #translate([0,0,206])rotate([0,0,55+i*360/3])translate([60,0,0])boltHole(15,6.5,25,2.5);
+            translate([0,0,206])rotate([0,0,55+i*360/3])translate([60,0,0])boltHole(15,6.5,25,2.5);
         }
         //remove motor housing
         baseMotorHousing();
