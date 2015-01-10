@@ -1,10 +1,10 @@
 detail=40;              //leave at 40 - initial mount printed at 40 detail
-nSteps = 25;            //number of vertical steps in the rotor generator - 10
-nStans = 15;             //number of stations along the blade - 5
+nSteps = 35;            //number of vertical steps in the rotor generator - 10
+nStans = 25;             //number of stations along the blade - 5
 nBlades = 6;            //number of blades in the rotor
 rotorHeight = 55;       //height of the rotor (clipped by intersection with profile)
 rotorCropHeight = 22;   //height of the lower part of the rotor
-twistMult = 0.35;        //increase twist on rotor (tweaks the value from twister())
+twistMult = 0.25;        //increase twist on rotor (tweaks the value from twister())
 twistTweak = rotorCropHeight/rotorHeight;       //to fix twist on cropped lower rotor blades
 bladeThick = 1.4;       //thickness of rotor blades
 bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
@@ -34,7 +34,7 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-translate([0,0,-193])rotor();
+//translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
 
@@ -162,35 +162,47 @@ module motor(pad, depth) {
 	}
 }
 
-module rotor() {
-    intersection() {
-        union() {
-            for (i=[0:(nBlades-1)]) {
-                translate([0,0,210]) {
-                    rotate([0,0,i*360/(nBlades)]) {
-                        rotorBlade(rotorHeight,1.0);
+module rotor() {
+    mountBoltLen = 8;
+    difference() {
+        union(){
+            intersection() {
+                union() {
+                    //full height blades
+                    for (i=[0:(nBlades-1)]) {
+                        translate([0,0,212]) {
+                            rotate([0,0,i*360/(nBlades)]) {
+                                rotorBlade(rotorHeight,1.0);
+                            }
+                        }
+                    }
+                    //cropped blades
+                    for (i=[0:(nBlades-1)]) {
+                        translate([0,0,212]) {
+                            rotate([0,0,(360/(nBlades))/2+i*360/(nBlades)]) {
+                                rotorBlade(rotorCropHeight,twistTweak);
+                            }
+                        }
                     }
                 }
+                rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
             }
-            for (i=[0:(nBlades-1)]) {
-                translate([0,0,210]) {
-                    rotate([0,0,(360/(nBlades))/2+i*360/(nBlades)]) {
-                        rotorBlade(rotorCropHeight,twistTweak);
-                    }
-                }
-            }
-        }
-        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
+            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+        }
+        //shaft hole >=6mm diam, >=40mm depth
+        rotate()translate([0,0,211.4])cylinder(h=42,d=6,$fn=detail);
+        //bolt holes for mount/clamp - m3x12
+        rotate([0,0,26]) {
+            translate([-(mountBoltLen+6/2)+1,0,240])rotate([0,90,0])boltHole(10,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
+            rotate([0,0,180])translate([-(mountBoltLen+6/2)+1,0,240])rotate([0,90,0])boltHole(10,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
+        }
     }
-    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
-    
-    //add difference to remove shaft and mounting/lock bolts for shaft (two or three...)
     //balance? might need additional bolts for balance...
 }
 
 //following functions used in rotorBlade
 function flatten(l) = [for (a=l) for (b=a) b];    //seriously, how the f%@k does this work?
-function pointRow(row,twist,maxHt) = concat(out(row,twist,maxHt),back(row,twist,maxHt));
+function pointRow(row,twist,maxHt) = concat(out(row,-twist,maxHt),back(row,-twist,maxHt));
 function out(ht,tw,maxHt)= [for(i=[0:nStans-1])[(x(i/nStans)*cos(tw)+yp()*sin(tw)),(-x(i/nStans)*sin(tw)+yp()*cos(tw)),maxHt*ht/nSteps]];
 function back(ht,tw,maxHt)= [for(j=[nStans-1:-1:0])[(x(j/nStans)*cos(tw)+yn()*sin(tw)),(-x(j/nStans)*sin(tw)+yn()*cos(tw)),maxHt*ht/nSteps]];
 function x(p) = (p*bladeSpan);
