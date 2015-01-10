@@ -22,13 +22,13 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //BASE FAIRING**************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])baseFairing();
+translate([0,0,-193])baseFairing();
 //for final render uncomment next line:
 //translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])shroud();
+translate([0,0,-193])shroud();
 //for final render uncomment next line:
 //translate([0,0,250])rotate([180,0,0])shroud();
 
@@ -40,29 +40,29 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //STAND*********************************************
 //for assembly uncomment next line:
-//translate([0,0,0])motorStand();
+translate([0,0,-193])rotate([90,0,0])stand();
 //for final render uncomment next line:
-translate([0,0,0])motorStand();
-
-//MOUNT*********************************************
-//for assembly uncomment next line:
-//translate([0,0,-193])motorMount();
-//for final render uncomment next line:
-//translate([0,0,-210])motorMount();
+//translate([0,0,0])motorStand();
 
 //170mm diam test section for bed size
 //translate([0,0,90])cylinder(h=2,d=170);
 //translate([0,0,95])cylinder(h=2,d=180);
 
-module motorStand() {
-    hull() {
-        translate([0,0,0])linear_extrude(3)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="footStand");
-        translate([-25/2,0,25])rotate([0,90,0])cylinder(h=25,d=25,$fn=detail);
+module stand() {
+    difference() {
+        translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand");
+        translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand2");
+        hull() {
+            translate([45,115,12])rotate([-90,0,-30]){
+                cylinder(d=9*2,h=40,$fn=detail);
+                translate([35,0,0])rotate([0,-30,0])cylinder(d=9*2,h=40,$fn=detail);
+            }
+        }
+        //remove bolt holes
+        //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
+        //      this will allow the allen key to access SCS head
     }
 }
-
-module motorMount() {
-}
 
 module baseMotorHousing() {
     difference() {
