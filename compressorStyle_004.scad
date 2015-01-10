@@ -16,33 +16,53 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //MOTOR HOUSING*************************************
 //for assembly uncomment next line:
-translate([0,0,-193])baseMotorHousing();
+//translate([0,0,-193])baseMotorHousing();
 //for final render uncomment next line:
 //translate([0,0,200])rotate([180,0,0])baseMotorHousing();
 
 //BASE FAIRING**************************************
 //for assembly uncomment next line:
-translate([0,0,-193])baseFairing();
+//translate([0,0,-193])baseFairing();
 //for final render uncomment next line:
 //translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
-translate([0,0,-193])shroud();
+//translate([0,0,-193])shroud();
 //for final render uncomment next line:
 //translate([0,0,250])rotate([180,0,0])shroud();
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-translate([0,0,-193])rotor();
+//translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
+
+//STAND*********************************************
+//for assembly uncomment next line:
+//translate([0,0,0])motorStand();
+//for final render uncomment next line:
+translate([0,0,0])motorStand();
 
-
+//MOUNT*********************************************
+//for assembly uncomment next line:
+//translate([0,0,-193])motorMount();
+//for final render uncomment next line:
+//translate([0,0,-210])motorMount();
 
 //170mm diam test section for bed size
 //translate([0,0,90])cylinder(h=2,d=170);
-//translate([0,0,95])cylinder(h=2,d=180);
+//translate([0,0,95])cylinder(h=2,d=180);
+
+module motorStand() {
+    hull() {
+        translate([0,0,0])linear_extrude(3)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="footStand");
+        translate([-25/2,0,25])rotate([0,90,0])cylinder(h=25,d=25,$fn=detail);
+    }
+}
+
+module motorMount() {
+}
 
 module baseMotorHousing() {
     difference() {
