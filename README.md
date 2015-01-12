@@ -3,5 +3,19 @@ compressorFan
 
 3d printable compressor-based desk fan
 
-Initial status is for the generator files and the scad file only, no outputs.
-At time of commit only the compressor motor base was printed.
+Scad files now largely complete
+Base motor mount printed, needs adjustment for motor mounts (too low) and strain relief fixings for cables adding
+Compressor printed, could possibly have higher sweep in inducer, could also have rear sweep on the edge + balance grubscrews
+Compressor is working as far as is known given no duct (clearance may be very conservative)
+
+Printed:
+	Base motor mount (6h @ 0.2mm, 10%)
+	Compressor (3h @ 0.2mm, 20%)
+
+To print:
+	Base fairing (? @ 0.2mm, 10%?)
+	Shroud (big job - 0.2mm, 10%?)
+	Stands (?)
+	
+Whole design is 100% eyeballed, no calculations up to now.
+I have a copy of "Gas Turbine Theory" [Cohen, Rogers, Saravanamuttoo: Longman] which looks like giving some relationships I can work with, we'll see if I can update if needed...
