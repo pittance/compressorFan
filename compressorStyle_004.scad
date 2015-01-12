@@ -22,13 +22,13 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //BASE FAIRING**************************************
 //for assembly uncomment next line:
-translate([0,0,-193])baseFairing();
+//translate([0,0,-193])baseFairing();
 //for final render uncomment next line:
 //translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
-translate([0,0,-193])shroud();
+//translate([0,0,-193])shroud();
 //for final render uncomment next line:
 //translate([0,0,250])rotate([180,0,0])shroud();
 
@@ -37,32 +37,38 @@ translate([0,0,-193])shroud();
 //translate([0,0,-193])rotor();
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
-
-//STAND*********************************************
-//for assembly uncomment next line:
-translate([0,0,-193])rotate([90,0,0])stand();
-//for final render uncomment next line:
-//translate([0,0,0])motorStand();
+
+//STAND*********************************************
+//for assembly uncomment next line:
+//translate([0,0,-193])rotate([90,0,-30])stand();
+//mirror([0,1,0])translate([0,0,-193])rotate([90,0,-30])stand();
+//for final render uncomment next line:
+//translate([0,0,0])stand();
 
 //170mm diam test section for bed size
 //translate([0,0,90])cylinder(h=2,d=170);
-//translate([0,0,95])cylinder(h=2,d=180);
-
-module stand() {
-    difference() {
-        translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand");
-        translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand2");
-        hull() {
-            translate([45,115,12])rotate([-90,0,-30]){
-                cylinder(d=9*2,h=40,$fn=detail);
-                translate([35,0,0])rotate([0,-30,0])cylinder(d=9*2,h=40,$fn=detail);
-            }
-        }
-        //remove bolt holes
-        //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
+//translate([0,0,95])cylinder(h=2,d=180);
+
+module stand() {
+    difference() {
+        translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand");
+        translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand2");
+        hull() {
+            translate([45,115,12])rotate([-90,0,-30]){
+                cylinder(d=9*2,h=40,$fn=detail);
+                translate([35,0,0])rotate([0,-30,0])cylinder(d=9*2,h=40,$fn=detail);
+            }
+        }
+        //remove bolt holes
+        //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
         //      this will allow the allen key to access SCS head
-    }
-}
+        translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,12,2.1);
+        translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+        translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
+        #translate([0,0,0])rotate([-90,30,0])shroud();
+        #translate([0,0,0])rotate([-90,30,0])baseFairing();
+    }
+}
 
 module baseMotorHousing() {
     difference() {
@@ -111,6 +117,13 @@ module baseFairing() {
         for(i=[0:2]){
             //three mounting holes
             translate([0,0,155])rotate([0,0,55+i*360/3])translate([68,0,0])boltHole(15,6.5,25,2.5);
+        }
+        //remove stand bolt hole
+        rotate([90,0,-30]) {
+            translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
+        }
+        rotate([90,0,30]) {
+            translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
         }
     }
 }
@@ -131,7 +144,16 @@ module shroud() {
             translate([0,0,206])rotate([0,0,55+i*360/3])translate([60,0,0])boltHole(15,6.5,25,2.5);
         }
         //remove motor housing
-        baseMotorHousing();
+        baseMotorHousing();
+        //remove stand bolt holes
+        rotate([90,0,-30]) {
+            translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+            translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
+        }
+        rotate([90,0,30]) {
+            translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+            translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
+        }
     }
 }
 
@@ -175,12 +197,12 @@ module motor(pad, depth) {
 	}
 }
 
-module rotor() {
-    mountBoltLen = 8;
-    difference() {
+module rotor() {
+    mountBoltLen = 8;
+    difference() {
         union(){
             intersection() {
-                union() {
+                union() {
                     //full height blades
                     for (i=[0:(nBlades-1)]) {
                         translate([0,0,212]) {
@@ -188,7 +210,7 @@ module rotor() {
                                 rotorBlade(rotorHeight,1.0);
                             }
                         }
-                    }
+                    }
                     //cropped blades
                     for (i=[0:(nBlades-1)]) {
                         translate([0,0,212]) {
@@ -200,15 +222,15 @@ module rotor() {
                 }
                 rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboBlades");
             }
-            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
-        }
-        //shaft hole >=6mm diam, >=40mm depth
-        rotate()translate([0,0,211.4])cylinder(h=42,d=6,$fn=detail);
-        //bolt holes for mount/clamp - m3x12
-        rotate([0,0,26]) {
-            translate([-(mountBoltLen+6/2)+1,0,240])rotate([0,90,0])boltHole(10,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
-            rotate([0,0,180])translate([-(mountBoltLen+6/2)+1,0,240])rotate([0,90,0])boltHole(10,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
-        }
+            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="turboCore");
+        }
+        //shaft hole >=6mm diam, >=40mm depth
+        rotate()translate([0,0,211.4])cylinder(h=42,d=6,$fn=detail);
+        //bolt holes for mount/clamp - m3x12
+        rotate([0,0,26]) {
+            translate([-(mountBoltLen+6/2)+1,0,240])rotate([0,90,0])boltHole(10,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
+            rotate([0,0,180])translate([-(mountBoltLen+6/2)+1,0,240])rotate([0,90,0])boltHole(10,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
+        }
     }
     //balance? might need additional bolts for balance...
 }
@@ -262,7 +284,8 @@ module boltHole(headLength, headDiam, shaftLength, shaftDiam) {
 	//head length std = 3mm
 	//head diameter std = 5.5mm
         //length defined
-	//shaft diameter std = 3mm
+	//shaft diameter std = 3mm
+        //3,5.5,12,2.1 
 	union() {
 		cylinder(h=shaftLength,d=shaftDiam,$fn=detail);
 		translate([0,0,-headLength]) cylinder(h=headLength,d=headDiam,$fn=detail); //h=2.9
