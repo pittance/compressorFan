@@ -30,7 +30,7 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 //for assembly uncomment next line:
 //translate([0,0,-193])shroud();
 //for final render uncomment next line:
-//translate([0,0,250])rotate([180,0,0])shroud();
+translate([0,0,250])rotate([180,0,0])shroud();
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
@@ -40,7 +40,7 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //STAND*********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])rotate([90,0,-30])stand();
+//translate([0,0,-193])rotate([90,0,-30])stand();
 //mirror([0,1,0])translate([0,0,-193])rotate([90,0,-30])stand();
 //for final render uncomment next line:
 //translate([0,0,0])stand();
@@ -61,11 +61,11 @@ module stand() {
         }
         //remove bolt holes
         //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
-        //      this will allow the allen key to access SCS head
-        translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,12,2.1);
-        translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
-        translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
-        #translate([0,0,0])rotate([-90,30,0])shroud();
+        //      this will allow the allen key to access SCS head
+        translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,12,2.1);
+        translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+        translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
+        #translate([0,0,0])rotate([-90,30,0])shroud();
         #translate([0,0,0])rotate([-90,30,0])baseFairing();
     }
 }
@@ -117,13 +117,13 @@ module baseFairing() {
         for(i=[0:2]){
             //three mounting holes
             translate([0,0,155])rotate([0,0,55+i*360/3])translate([68,0,0])boltHole(15,6.5,25,2.5);
-        }
-        //remove stand bolt hole
-        rotate([90,0,-30]) {
-            translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
-        }
-        rotate([90,0,30]) {
-            translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
+        }
+        //remove stand bolt hole
+        rotate([90,0,-30]) {
+            translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
+        }
+        rotate([90,0,30]) {
+            translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
         }
     }
 }
@@ -144,16 +144,16 @@ module shroud() {
             translate([0,0,206])rotate([0,0,55+i*360/3])translate([60,0,0])boltHole(15,6.5,25,2.5);
         }
         //remove motor housing
-        baseMotorHousing();
-        //remove stand bolt holes
-        rotate([90,0,-30]) {
-            translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
-            translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
-        }
-        rotate([90,0,30]) {
-            translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
-            translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
-        }
+        baseMotorHousing();
+        //remove stand bolt holes
+        rotate([90,0,-30]) {
+            translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+            translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
+        }
+        rotate([90,0,30]) {
+            translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+            translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
+        }
     }
 }
 
@@ -284,7 +284,7 @@ module boltHole(headLength, headDiam, shaftLength, shaftDiam) {
 	//head length std = 3mm
 	//head diameter std = 5.5mm
         //length defined
-	//shaft diameter std = 3mm
+	//shaft diameter std = 3mm
         //3,5.5,12,2.1 
 	union() {
 		cylinder(h=shaftLength,d=shaftDiam,$fn=detail);
