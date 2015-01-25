@@ -24,13 +24,13 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 //for assembly uncomment next line:
 //translate([0,0,-193])baseFairing();
 //for final render uncomment next line:
-//translate([0,0,160])rotate([180,0,0])baseFairing();
+translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
 //translate([0,0,-193])shroud();
 //for final render uncomment next line:
-translate([0,0,250])rotate([180,0,0])shroud();
+//translate([0,0,250])rotate([180,0,0])shroud();
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
