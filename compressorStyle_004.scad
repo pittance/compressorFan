@@ -24,7 +24,7 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 //for assembly uncomment next line:
 //translate([0,0,-193])baseFairing();
 //for final render uncomment next line:
-translate([0,0,160])rotate([180,0,0])baseFairing();
+//translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
@@ -42,31 +42,36 @@ translate([0,0,160])rotate([180,0,0])baseFairing();
 //for assembly uncomment next line:
 //translate([0,0,-193])rotate([90,0,-30])stand();
 //mirror([0,1,0])translate([0,0,-193])rotate([90,0,-30])stand();
-//for final render uncomment next line:
-//translate([0,0,0])stand();
+//for final render uncomment next lines:
+//translate([0,0,0])stand();      //RHS
+mirror([1,0,0])translate([0,0,0])stand();      //LHS
 
 //170mm diam test section for bed size
 //translate([0,0,90])cylinder(h=2,d=170);
 //translate([0,0,95])cylinder(h=2,d=180);
 
-module stand() {
+module stand() {
     difference() {
-        translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand");
-        translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand2");
-        hull() {
-            translate([45,115,12])rotate([-90,0,-30]){
-                cylinder(d=9*2,h=40,$fn=detail);
-                translate([35,0,0])rotate([0,-30,0])cylinder(d=9*2,h=40,$fn=detail);
+        difference() {
+            translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand");
+            translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConv.dxf",layer="stand2");
+            hull() {
+                translate([45,115,12])rotate([-90,0,-30]){
+                    cylinder(d=9*2,h=40,$fn=detail);
+                    translate([35,0,0])rotate([0,-30,0])cylinder(d=9*2,h=40,$fn=detail);
+                }
             }
-        }
-        //remove bolt holes
-        //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
-        //      this will allow the allen key to access SCS head
-        translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,12,2.1);
-        translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
-        translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
-        #translate([0,0,0])rotate([-90,30,0])shroud();
-        #translate([0,0,0])rotate([-90,30,0])baseFairing();
+            //remove bolt holes
+            //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
+            //      this will allow the allen key to access SCS head
+//            translate([0,0,0])rotate([-90,30,0])shroud();
+            rotate([-90,30,0])rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="shroud");
+//            translate([0,0,0])rotate([-90,30,0])baseFairing();
+            rotate([-90,30,0])rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConv.dxf",layer="base");
+        }
+        translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,12,2.1);
+        translate([87.5,250,7.5])rotate([0,90,182])boltHole(25,5.5,12,2.1);
+        translate([87,230,7.5])rotate([0,90,178])boltHole(29,5.5,12,2.1);
     }
 }
 
@@ -118,13 +123,13 @@ module baseFairing() {
             //three mounting holes
             translate([0,0,155])rotate([0,0,55+i*360/3])translate([68,0,0])boltHole(15,6.5,25,2.5);
         }
-        //remove stand bolt hole
+        //remove stand bolt hole
         rotate([90,0,-30]) {
             translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
         }
         rotate([90,0,30]) {
             translate([36,132,7.5])rotate([0,90,150])boltHole(3,5.5,8,2.1);
-        }
+        }
     }
 }
 module shroud() {
