@@ -9,7 +9,7 @@ twistTweak = rotorCropHeight/rotorHeight;       //to fix twist on cropped lower 
 bladeThick = 1.4;       //thickness of rotor blades
 bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
-//rotate([90,180,0])motor(0,0);
+//rotate([90,180,0])motor(1,5);
 
 //CHECK THE ROTATION DIRECTION FOR THE ROTOR NUMBNUTS
 //drop the part down 193mm to match motor
@@ -22,29 +22,33 @@ bladeSpan = 70;         //blade span (axis to edge, clipped by profile)
 
 //BASE FAIRING**************************************
 //for assembly uncomment next line:
-translate([0,0,-193])baseFairing();
+//translate([0,0,-193])baseFairing();
+
 //for final render uncomment next line:
 //translate([0,0,160])rotate([180,0,0])baseFairing();
 
 //SHROUD********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])shroud();
+//translate([0,0,-193])shroud();
+
 //for final render uncomment next line:
 //translate([0,0,250])rotate([180,0,0])shroud();
 
 //ROTOR*********************************************
 //for assembly uncomment next line:
-//translate([0,0,-193])rotor();
+//translate([0,0,-193])rotor();
+
 //for final render uncomment next line:
 //translate([0,0,-210])rotor();
 
 //STAND*********************************************
 //for assembly uncomment next lines:
 //translate([0,0,-193])rotate([90,0,-30])stand();
-//mirror([0,1,0])translate([0,0,-193])rotate([90,0,-30])stand();
+//mirror([0,1,0])translate([0,0,-193])rotate([90,0,-30])stand();
+
 //for final render uncomment next lines:
-//translate([0,0,0])stand();      //RHS
-//mirror([1,0,0])translate([0,0,0])stand();      //LHS
+//translate([0,0,0])stand();                            //RHS
+//mirror([1,0,0])translate([0,0,0])stand();             //LHS
 
 //170mm diam test section for bed size
 //translate([0,0,90])cylinder(h=2,d=170);
