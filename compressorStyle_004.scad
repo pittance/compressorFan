@@ -1,3 +1,5 @@
+use <naca.scad>
+
 detail=150;              //linitial mount printed at 40 detail
 nSteps = 60;            //number of vertical steps in the rotor generator - 10
 nStans = nSteps;             //number of stations along the blade - 5
@@ -18,7 +20,7 @@ cropped = 0;            //1=generate cropped blades, 0=don't
 
 //MOTOR HOUSING*************************************
 //for final render uncomment next line:
-//translate([0,0,200])rotate([180,0,0])baseMotorHousing();
+translate([0,0,200])rotate([180,0,0])baseMotorHousing();
 
 //BASE FAIRING**************************************
 //for final render uncomment next line:
@@ -36,7 +38,7 @@ cropped = 0;            //1=generate cropped blades, 0=don't
 //STAND*********************************************
 //for final render uncomment next lines:
 //translate([-80,-170,0])stand();                            //RHS
-mirror([1,0,0])translate([-80,-170,0])stand();             //LHS
+//mirror([1,0,0])translate([-80,-170,0])stand();             //LHS
 
 //170mm diam test section for bed size
 //translate([0,0,-5])cylinder(h=2,d=160);
@@ -108,12 +110,12 @@ module baseMotorHousing() {
         //mounting holes for the motor housing to be bolted to the shroud
         for(i=[0:4]){
             //five mounting holes
-            #translate([0,0,210])rotate([0,0,63.5+i*360/5])translate([61,0,0])boltHole(15,6.5,15,2.5);
+            translate([0,0,207])rotate([0,0,63.5+i*360/5])translate([61,0,0])boltHole(15,6.5,15,2.5);
         }
         //mounting holes for the fairing
         for(i=[0:2]){
             //three mounting holes
-            #translate([0,0,155])rotate([0,0,30+i*360/3])translate([61,0,0])boltHole(15,6.5,25,2.5);
+            translate([0,0,155])rotate([0,0,30+i*360/3])translate([61,0,0])boltHole(15,6.5,25,2.5);
         }
     }
     //cable strain relief
