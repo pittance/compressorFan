@@ -1,7 +1,7 @@
 use <naca.scad>
 
-detail=150;              //linitial mount printed at 40 detail
-nSteps = 60;            //number of vertical steps in the rotor generator - 10
+detail=40;              //150
+nSteps = 10;            //number of vertical steps in the rotor generator - 60
 nStans = nSteps;             //number of stations along the blade - 5
 nBlades = 11;            //number of blades in the rotor
 rotorHeight = 65;       //height of the rotor (clipped by intersection with profile)
@@ -102,6 +102,11 @@ module baseMotorHousing() {
             for (i=[0:2]) {
     translate([0,0,158.1])rotate([0,0,30+i*360/3])translate([61,0,0])cylinder(h=48,d=9,$fn=detail);
             }
+            //naca duct ventilation
+            for(i=[0:1]){
+                //five mounting holes
+                translate([0,0,207])rotate([0,0,15+i*360/2])translate([67,0,-38])rotate([95,0,90])scale(0.2)nacaPad();
+            }
         }
         //scoop out padded motor from housing (includes motor bolt holes)
         translate([0,0,192])rotate([90,180,0])motor(5,0);
@@ -118,16 +123,15 @@ module baseMotorHousing() {
             translate([0,0,155])rotate([0,0,30+i*360/3])translate([61,0,0])boltHole(15,6.5,25,2.5);
         }
         //naca duct ventilation
-        for(i=[0:2]){
+        for(i=[0:1]){
             //five mounting holes
-            translate([0,0,207])rotate([0,0,75+i*360/3])translate([69,0,-38])rotate([95,0,90])scale(0.2)naca();
+            translate([0,0,207])rotate([0,0,15+i*360/2])translate([68,0,-38])rotate([95,0,90])scale(0.2)naca();
         }
     }
     //cable strain relief
     rotate([90,0,-30])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
     rotate([90,0,-120])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
     rotate([90,0,180])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
-    
 }
 
 module baseFairing() {
