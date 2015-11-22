@@ -1,15 +1,15 @@
 use <naca.scad>
 
-detail=40;              //150
-nSteps = 10;            //number of vertical steps in the rotor generator - 60
+detail=150;              //150
+nSteps = 60;            //number of vertical steps in the rotor generator - 60
 nStans = nSteps;             //number of stations along the blade - 5
 nBlades = 11;            //number of blades in the rotor
 rotorHeight = 65;       //height of the rotor (clipped by intersection with profile)
 rotorBolts = 2;
 rotorCropHeight = 22;   //height of the lower part of the rotor
-twistMult = 0.5;        //increase twist on rotor (tweaks the value from twister())
+twistMult = 0.8;        //increase twist on rotor (tweaks the value from twister())
 twistTweak = rotorCropHeight/rotorHeight;       //to fix twist on cropped lower rotor blades
-bladeThick = 1.0;       //thickness of rotor blades
+bladeThick = 1.8;       //thickness of rotor blades
 bladeSpan = 80;         //blade span (axis to edge, clipped by profile)
 cropped = 0;            //1=generate cropped blades, 0=don't
 
@@ -20,7 +20,7 @@ cropped = 0;            //1=generate cropped blades, 0=don't
 
 //MOTOR HOUSING*************************************
 //for final render uncomment next line:
-translate([0,0,200])rotate([180,0,0])baseMotorHousing();
+//translate([0,0,200])rotate([180,0,0])baseMotorHousing();
 
 //BASE FAIRING**************************************
 //for final render uncomment next line:
@@ -33,7 +33,7 @@ translate([0,0,200])rotate([180,0,0])baseMotorHousing();
 
 //ROTOR*********************************************
 //for final render uncomment next line:
-//translate([0,0,-210])rotor();
+translate([0,0,-210])rotor();
 
 //STAND*********************************************
 //for final render uncomment next lines:
@@ -105,7 +105,8 @@ module baseMotorHousing() {
             //naca duct ventilation
             for(i=[0:1]){
                 //five mounting holes
-                translate([0,0,207])rotate([0,0,15+i*360/2])translate([67,0,-38])rotate([95,0,90])scale(0.2)nacaPad();
+                translate([0,0,206])rotate([0,0,15+i*360/2])translate([67,0,-38])rotate([95,0,90])scale(0.2)nacaPad();
+                translate([0,0,206])rotate([0,0,-15+i*360/2])translate([67,0,-38])rotate([95,0,90])scale(0.2)nacaPad();
             }
         }
         //scoop out padded motor from housing (includes motor bolt holes)
@@ -124,14 +125,13 @@ module baseMotorHousing() {
         }
         //naca duct ventilation
         for(i=[0:1]){
-            //five mounting holes
             translate([0,0,207])rotate([0,0,15+i*360/2])translate([68,0,-38])rotate([95,0,90])scale(0.2)naca();
+            translate([0,0,207])rotate([0,0,-15+i*360/2])translate([68,0,-38])rotate([95,0,90])scale(0.2)naca();
         }
     }
     //cable strain relief
-    rotate([90,0,-30])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
+    rotate([90,0,-50])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
     rotate([90,0,-120])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
-    rotate([90,0,180])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
 }
 
 module baseFairing() {
@@ -145,7 +145,7 @@ module baseFairing() {
         //mounting holes for the fairing
         for(i=[0:2]){
             //three mounting holes
-            #translate([0,0,155])rotate([0,0,30+i*360/3])translate([61,0,0])boltHole(15,6.5,25,2.5);
+            translate([0,0,155])rotate([0,0,30+i*360/3])translate([61,0,0])boltHole(15,6.5,25,2.5);
         }
         //remove stand bolt hole
         rotate([90,0,-30]) {
@@ -153,6 +153,14 @@ module baseFairing() {
         }
         mirror([0,1,0])rotate([90,0,-30]) {
             translate([36,137,7.5])rotate([0,90,152])boltHole(29,5.5,11,2.1); //fairing end
+        }
+        //ventilation holes
+        for(i=[0:5]){
+            //6 rows
+            for(j=[0:7]) {
+                //6 stations
+                rotate([0,0,i*20+360*j/8])translate([0,10+i*4,60])cylinder(h=100,d=4,$fn=16);
+            }
         }
     }
 }
@@ -279,12 +287,12 @@ module rotor() {
 //            }
 //        }
         //lower bolt holes for mount/clamp - m3x12
-        rotate([0,0,0.43*(360/rotorBolts)]) {
+        rotate([0,0,0.37*(360/rotorBolts)]) {
             for (i=[0:rotorBolts-1]){
                 rotate([0,0,(i/rotorBolts)*360])translate([-(mountBoltLen+6/2)+1,0,220])rotate([0,90,0])boltHole(50,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
             }
         }
-        rotate([0,0,3*(360/nBlades)+0.43*(360/rotorBolts)]) {
+        rotate([0,0,3*(360/nBlades)+0.37*(360/rotorBolts)]) {
             for (i=[0:rotorBolts-1]){
                 rotate([0,0,(i/rotorBolts)*360])translate([-(mountBoltLen+6/2)+1,0,220])rotate([0,90,0])boltHole(50,7,mountBoltLen+2,2.1); //14mm to ensure complete intersectn
             }
@@ -339,7 +347,7 @@ function twister(frac) = [0,0,-twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)
 //function twisty(frac) = -twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
 function twisty(frac) = tw1(frac)+tw2(frac);
 function tw1(frac) = -twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
-function tw2(frac) = twistMult/8*exp(-frac+1)*exp(-frac+1)*exp(-frac+1)*exp(-frac+1)*exp(-frac+1);
+function tw2(frac) = twistMult/6*exp(-frac+1)*exp(-frac+1)*exp(-frac+1)*exp(-frac+1)*exp(-frac+1);
 //function tw2(frac) = -twistMult*20*(cos((-frac+1)*180)+1);
 
 module boltHole(headLength, headDiam, shaftLength, shaftDiam) {
