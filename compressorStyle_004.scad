@@ -1,7 +1,7 @@
 use <naca.scad>
 
 detail=150;              //150
-nSteps = 60;            //number of vertical steps in the rotor generator - 60
+nSteps = 20;            //number of vertical steps in the rotor generator - 60
 nStans = nSteps;             //number of stations along the blade - 5
 nBlades = 11;            //number of blades in the rotor
 rotorHeight = 65;       //height of the rotor (clipped by intersection with profile)
@@ -28,12 +28,12 @@ cropped = 0;            //1=generate cropped blades, 0=don't
 
 //SHROUD********************************************
 //for final render uncomment next line:
-//translate([0,0,250])rotate([180,0,0])shroud();
+translate([0,0,250])rotate([180,0,0])shroud();
 //translate([0,0,-270])shroudLip();
 
 //ROTOR*********************************************
 //for final render uncomment next line:
-translate([0,0,-210])rotor();
+//translate([0,0,-210])rotor();
 
 //STAND*********************************************
 //for final render uncomment next lines:
@@ -57,8 +57,8 @@ translate([0,0,-210])rotor();
 module stand() {
     difference() {
         difference() {
-            translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConvNew.dxf",layer="stand");
-            translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConvNew.dxf",layer="stand2");
+            translate([0,0,0])linear_extrude(height=12)translate([0,0,0])scale(1)import(file = "turboProfileConvNew_001.dxf",layer="stand");
+            translate([0,0,3])linear_extrude(height=9)translate([0,0,0])scale(1)import(file = "turboProfileConvNew_001.dxf",layer="stand2");
             hull() {
                 translate([44,115,12])rotate([-90,0,-21]){
                     translate([0,0,0])rotate([0,5,0])cylinder(d=9*2,h=40,$fn=50);
@@ -69,9 +69,9 @@ module stand() {
             //nb:   remember to allow a hole in the bottom of the web for the bolt to the shroud case,
             //      this will allow the allen key to access SCS head
 //            translate([0,0,0])rotate([-90,30,0])shroud();
-            rotate([-90,30,0])rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="shroud");
+            rotate([-90,30,0])rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="shroud");
 //            translate([0,0,0])rotate([-90,30,0])baseFairing();
-            rotate([-90,30,0])rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="base");
+            rotate([-90,30,0])rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="base");
         }
         //bolting holes for stand
         translate([36,137,7.5])rotate([0,90,152])boltHole(29,5.5,12,2.1); //fairing end
@@ -86,7 +86,7 @@ module baseMotorHousing() {
             difference() {
                 union() {
                     //form the base
-                    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="base");
+                    rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="base");
                 }
                 //remove the bottom half
                 translate([0,0,-12])cylinder(h=170,d=170);
@@ -130,14 +130,14 @@ module baseMotorHousing() {
         }
     }
     //cable strain relief
-    rotate([90,0,-50])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
-    rotate([90,0,-120])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="strainRelief");
+    rotate([90,0,-50])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew_001.dxf",layer="strainRelief");
+    rotate([90,0,-120])linear_extrude(height=2,scale=1)translate([0,0,0])import(file = "turboProfileConvNew_001.dxf",layer="strainRelief");
 }
 
 module baseFairing() {
     difference() {
         //form the base
-        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="base");
+        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="base");
         //remove the bottom half
         translate([0,0,-12+170])cylinder(h=170,d=170);
         //scoop out the inside
@@ -167,10 +167,10 @@ module baseFairing() {
 module shroudLip() {
     difference() {
         union() {
-            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="shroud");
+            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="shroud");
             //guard
-            translate([0,75/2,0])rotate([90,0,0])linear_extrude(height=75,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="guard");
-            rotate([0,0,90])translate([0,75/2,0])rotate([90,0,0])linear_extrude(height=75,scale=1)translate([0,0,0])import(file = "turboProfileConvNew.dxf",layer="guard");
+            translate([0,75/2,0])rotate([90,0,0])linear_extrude(height=75,scale=1)translate([0,0,0])import(file = "turboProfileConvNew_001.dxf",layer="guard");
+            rotate([0,0,90])translate([0,75/2,0])rotate([90,0,0])linear_extrude(height=75,scale=1)translate([0,0,0])import(file = "turboProfileConvNew_001.dxf",layer="guard");
         }
         //remove bottom part (in shroud)
         translate([0,0,270-100])cylinder(h=100,d=180);
@@ -185,11 +185,11 @@ module shroudLip() {
 module shroud() {
     difference() {
         union() {
-            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="shroud");
+            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="shroud");
             //guide vanes
             translate([0,0,0]) {
                 for(i=[0:4]){
-                    translate([0,0,204])rotate([0,0,4+i*(360/5)])linear_extrude(height=15,scale=1)translate([9.3,-248,0])scale(0.9)import(file = "turboProfileConvNew.dxf",layer="guideVane");
+                    translate([0,0,204])rotate([0,0,4+i*(360/5)])linear_extrude(height=15,scale=1)translate([9.3,-248,0])scale(0.9)import(file = "turboProfileConvNew_001.dxf",layer="guideVane");
                 }
             }
         }
@@ -202,7 +202,7 @@ module shroud() {
         }
         //remove motor housing
 //        baseMotorHousing();
-        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="base");
+        rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="base");
         //remove stand bolt holes
         //bolting holes for stand - don't reverse rotation - mirror the second
         rotate([90,0,-30])translate([65,227,7.5])rotate([0,90,220])boltHole(29,5.5,12,2.1);  //shroud end
@@ -274,9 +274,9 @@ module rotor() {
                         }
 //                    }
                 }
-                rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file="turboProfileConvNew.dxf",layer="turboBlades");
+                rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file="turboProfileConvNew_001.dxf",layer="turboBlades",convexity=10);
             }
-            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew.dxf",layer="turboCore");
+            rotate_extrude($fn=detail)translate([0,0,0])rotate([0,0,0])import (file = "turboProfileConvNew_001.dxf",layer="turboCore",convexity=10);
         }
         //shaft hole >=6mm diam, >=40mm depth
         rotate()translate([0,0,211.4])cylinder(h=42,d=7,$fn=detail);
@@ -343,12 +343,13 @@ module rotorBlade(maxHt,twFix) {
 }
 
 //function defines the twist on the blades of the rotor
-function twister(frac) = [0,0,-twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac)];
-//function twisty(frac) = -twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
 function twisty(frac) = tw1(frac)+tw2(frac);
 function tw1(frac) = -twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
 function tw2(frac) = twistMult/6*exp(-frac+1)*exp(-frac+1)*exp(-frac+1)*exp(-frac+1)*exp(-frac+1);
+
 //function tw2(frac) = -twistMult*20*(cos((-frac+1)*180)+1);
+//function twister(frac) = [0,0,-twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac)];
+//function twisty(frac) = -twistMult*exp(frac)*exp(frac)*exp(frac)*exp(frac)*exp(frac);
 
 module boltHole(headLength, headDiam, shaftLength, shaftDiam) {
  	//(M3)
